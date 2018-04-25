@@ -113,4 +113,5 @@ class AjaxFormViewMixin(object):
                                 )
                         ),
                     }), content_type='application/json')
-
+        else:
+            return self.form_invalid(form)
