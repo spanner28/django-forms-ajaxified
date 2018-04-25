@@ -81,3 +81,36 @@ class AjaxFormViewMixin(object):
                             'trigger_element')),
                 }), content_type='application/json')
         return super(AjaxFormViewMixin, self).form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        form = self.get_form()
+        if form.is_valid():
+            if self.request.is_ajax():
+                trigger_element = self.request.POST.get('trigger_element', self.request.GET.get('trigger_element')) or 'nothing'
+                if (trigger_element == 'nothing' or trigger_element == 'undefined'):
+                    self.form_valid(form)
+                    return HttpResponse(
+                        json.dumps({
+                                'success': 1,
+                                'submit': 1,
+                                'trigger_element': self.request.POST.get(
+                                    'trigger_element', self.request.GET.get(
+                                    'trigger_element'
+                                )
+                        ),
+                    }), content_type='application/json')
+                else:
+                    return HttpResponse(
+                        json.dumps({
+                                'success': 1,
+                                'trigger_element': self.request.POST.get(
+                                    'trigger_element', self.request.GET.get(
+                                    'trigger_element'
+                                )
+                        ),
+                    }), content_type='application/json')
+
